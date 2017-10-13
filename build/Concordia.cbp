@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+   <FileVersion major="1" minor="6" />
+   <Project>
+      <Option title="Concordia" />
+      <Option makefile_is_custom="1" />
+      <Option compiler="gcc" />
+      <Option virtualFolders="CMake Files\;CMake Files\src\;CMake Files\src\Concordia\;" />
+      <Build>
+      <Target title="all">
+         <Option working_dir="/home/conor/Git/VIGameStudio/Concordia/build" />
+         <Option type="4" />
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/home/conor/Git/VIGameStudio/Concordia/build/Makefile&quot;  VERBOSE=1 all" />
+            <CompileFile command="/usr/bin/make -f &quot;/home/conor/Git/VIGameStudio/Concordia/build/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/home/conor/Git/VIGameStudio/Concordia/build/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/home/conor/Git/VIGameStudio/Concordia/build/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="edit_cache">
+         <Option working_dir="/home/conor/Git/VIGameStudio/Concordia/build" />
+         <Option type="4" />
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/home/conor/Git/VIGameStudio/Concordia/build/Makefile&quot;  VERBOSE=1 edit_cache" />
+            <CompileFile command="/usr/bin/make -f &quot;/home/conor/Git/VIGameStudio/Concordia/build/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/home/conor/Git/VIGameStudio/Concordia/build/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/home/conor/Git/VIGameStudio/Concordia/build/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="rebuild_cache">
+         <Option working_dir="/home/conor/Git/VIGameStudio/Concordia/build" />
+         <Option type="4" />
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/home/conor/Git/VIGameStudio/Concordia/build/Makefile&quot;  VERBOSE=1 rebuild_cache" />
+            <CompileFile command="/usr/bin/make -f &quot;/home/conor/Git/VIGameStudio/Concordia/build/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/home/conor/Git/VIGameStudio/Concordia/build/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/home/conor/Git/VIGameStudio/Concordia/build/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="Concordia">
+         <Option output="/home/conor/Git/VIGameStudio/Concordia/build/Concordia" prefix_auto="0" extension_auto="0" />
+         <Option working_dir="/home/conor/Git/VIGameStudio/Concordia/build" />
+         <Option object_output="./" />
+         <Option type="1" />
+         <Option compiler="gcc" />
+         <Compiler>
+            <Add directory="/home/conor/Git/VIGameStudio/Concordia/src" />
+            <Add directory="/usr/include" />
+            <Add directory="/usr/include/c++/5" />
+            <Add directory="/usr/include/c++/5/backward" />
+            <Add directory="/usr/include/x86_64-linux-gnu" />
+            <Add directory="/usr/include/x86_64-linux-gnu/c++/5" />
+            <Add directory="/usr/lib/gcc/x86_64-linux-gnu/5/include" />
+            <Add directory="/usr/lib/gcc/x86_64-linux-gnu/5/include-fixed" />
+            <Add directory="/usr/local/include" />
+         </Compiler>
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/home/conor/Git/VIGameStudio/Concordia/build/Makefile&quot;  VERBOSE=1 Concordia" />
+            <CompileFile command="/usr/bin/make -f &quot;/home/conor/Git/VIGameStudio/Concordia/build/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/home/conor/Git/VIGameStudio/Concordia/build/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/home/conor/Git/VIGameStudio/Concordia/build/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="Concordia/fast">
+         <Option output="/home/conor/Git/VIGameStudio/Concordia/build/Concordia" prefix_auto="0" extension_auto="0" />
+         <Option working_dir="/home/conor/Git/VIGameStudio/Concordia/build" />
+         <Option object_output="./" />
+         <Option type="1" />
+         <Option compiler="gcc" />
+         <Compiler>
+            <Add directory="/home/conor/Git/VIGameStudio/Concordia/src" />
+            <Add directory="/usr/include" />
+            <Add directory="/usr/include/c++/5" />
+            <Add directory="/usr/include/c++/5/backward" />
+            <Add directory="/usr/include/x86_64-linux-gnu" />
+            <Add directory="/usr/include/x86_64-linux-gnu/c++/5" />
+            <Add directory="/usr/lib/gcc/x86_64-linux-gnu/5/include" />
+            <Add directory="/usr/lib/gcc/x86_64-linux-gnu/5/include-fixed" />
+            <Add directory="/usr/local/include" />
+         </Compiler>
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/home/conor/Git/VIGameStudio/Concordia/build/Makefile&quot;  VERBOSE=1 Concordia/fast" />
+            <CompileFile command="/usr/bin/make -f &quot;/home/conor/Git/VIGameStudio/Concordia/build/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/home/conor/Git/VIGameStudio/Concordia/build/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/home/conor/Git/VIGameStudio/Concordia/build/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="concordia">
+         <Option output="/home/conor/Git/VIGameStudio/Concordia/build/libconcordia.a" prefix_auto="0" extension_auto="0" />
+         <Option working_dir="/home/conor/Git/VIGameStudio/Concordia/build" />
+         <Option object_output="./" />
+         <Option type="2" />
+         <Option compiler="gcc" />
+         <Compiler>
+            <Add directory="/home/conor/Git/VIGameStudio/Concordia/src" />
+            <Add directory="/usr/include" />
+            <Add directory="/usr/include/c++/5" />
+            <Add directory="/usr/include/c++/5/backward" />
+            <Add directory="/usr/include/x86_64-linux-gnu" />
+            <Add directory="/usr/include/x86_64-linux-gnu/c++/5" />
+            <Add directory="/usr/lib/gcc/x86_64-linux-gnu/5/include" />
+            <Add directory="/usr/lib/gcc/x86_64-linux-gnu/5/include-fixed" />
+            <Add directory="/usr/local/include" />
+         </Compiler>
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/home/conor/Git/VIGameStudio/Concordia/build/Makefile&quot;  VERBOSE=1 concordia" />
+            <CompileFile command="/usr/bin/make -f &quot;/home/conor/Git/VIGameStudio/Concordia/build/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/home/conor/Git/VIGameStudio/Concordia/build/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/home/conor/Git/VIGameStudio/Concordia/build/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="concordia/fast">
+         <Option output="/home/conor/Git/VIGameStudio/Concordia/build/libconcordia.a" prefix_auto="0" extension_auto="0" />
+         <Option working_dir="/home/conor/Git/VIGameStudio/Concordia/build" />
+         <Option object_output="./" />
+         <Option type="2" />
+         <Option compiler="gcc" />
+         <Compiler>
+            <Add directory="/home/conor/Git/VIGameStudio/Concordia/src" />
+            <Add directory="/usr/include" />
+            <Add directory="/usr/include/c++/5" />
+            <Add directory="/usr/include/c++/5/backward" />
+            <Add directory="/usr/include/x86_64-linux-gnu" />
+            <Add directory="/usr/include/x86_64-linux-gnu/c++/5" />
+            <Add directory="/usr/lib/gcc/x86_64-linux-gnu/5/include" />
+            <Add directory="/usr/lib/gcc/x86_64-linux-gnu/5/include-fixed" />
+            <Add directory="/usr/local/include" />
+         </Compiler>
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/home/conor/Git/VIGameStudio/Concordia/build/Makefile&quot;  VERBOSE=1 concordia/fast" />
+            <CompileFile command="/usr/bin/make -f &quot;/home/conor/Git/VIGameStudio/Concordia/build/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/home/conor/Git/VIGameStudio/Concordia/build/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/home/conor/Git/VIGameStudio/Concordia/build/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      </Build>
+      <Unit filename="/home/conor/Git/VIGameStudio/Concordia/src/Concordia/EntityMgr.cpp">
+         <Option target="concordia"/>
+      </Unit>
+      <Unit filename="/home/conor/Git/VIGameStudio/Concordia/src/Concordia/EntityMgr.hpp">
+         <Option target="concordia"/>
+      </Unit>
+      <Unit filename="/home/conor/Git/VIGameStudio/Concordia/src/Concordia/EventMgr.cpp">
+         <Option target="concordia"/>
+      </Unit>
+      <Unit filename="/home/conor/Git/VIGameStudio/Concordia/src/Concordia/EventMgr.hpp">
+         <Option target="concordia"/>
+      </Unit>
+      <Unit filename="/home/conor/Git/VIGameStudio/Concordia/src/Concordia/NonCopyable.hpp">
+         <Option target="concordia"/>
+      </Unit>
+      <Unit filename="/home/conor/Git/VIGameStudio/Concordia/src/Concordia/Pool.hpp">
+         <Option target="concordia"/>
+      </Unit>
+      <Unit filename="/home/conor/Git/VIGameStudio/Concordia/src/Concordia/SystemMgr.cpp">
+         <Option target="concordia"/>
+      </Unit>
+      <Unit filename="/home/conor/Git/VIGameStudio/Concordia/src/Concordia/SystemMgr.hpp">
+         <Option target="concordia"/>
+      </Unit>
+      <Unit filename="/home/conor/Git/VIGameStudio/Concordia/src/main.cpp">
+         <Option target="Concordia"/>
+      </Unit>
+      <Unit filename="/home/conor/Git/VIGameStudio/Concordia/CMakeLists.txt">
+          <Option virtualFolder="CMake Files\" />
+      </Unit>
+      <Unit filename="/home/conor/Git/VIGameStudio/Concordia/src/CMakeLists.txt">
+          <Option virtualFolder="CMake Files\src\" />
+      </Unit>
+      <Unit filename="/home/conor/Git/VIGameStudio/Concordia/src/Concordia/CMakeLists.txt">
+          <Option virtualFolder="CMake Files\src\Concordia\" />
+      </Unit>
+   </Project>
+</CodeBlocks_project_file>
