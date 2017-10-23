@@ -9,9 +9,9 @@
 #include <vector>
 
 /**
- * @brief Entities
+ * @brief Defines a static function for derived classes to register a UID
+ * from counter.
  */
-
 struct ICmp {
 protected:
   static size_t regId() {
@@ -20,6 +20,9 @@ protected:
   }
 };
 
+/**
+ * @brief
+ */
 template <typename E> struct Cmp : public ICmp {
   static size_t id() {
     static const size_t s_id = regId();
