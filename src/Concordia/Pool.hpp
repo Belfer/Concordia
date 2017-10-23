@@ -7,6 +7,8 @@
 #include <utility>
 #include <vector>
 
+using uint = unsigned int;
+
 struct IPool {
   virtual ~IPool() {}
   virtual void clear() = 0;
