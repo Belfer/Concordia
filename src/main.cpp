@@ -4,6 +4,8 @@
 #include <iostream>
 #include <string>
 
+using namespace Concordia;
+
 struct SystemEvent {};
 
 struct SystemEventsReceiver : Receiver {
@@ -31,11 +33,21 @@ struct TransformCmp : Cmp<TransformCmp> {
   float rot = 0;
 };
 
-struct GameObjectSys : Sys<GameObjectSys> {
+struct GameObjectSys : public System<GameObjectSys> {
   void init(EntityMgr &es) {
     std::cout << "INIT\n";
 
-    for (auto &e : es.entities()) {
+	auto entities = es.getEntitiesWith<GameObjectCmp>();
+	  for (auto components : entities)
+	  {
+		  auto& goc = components.get<GameObjectCmp>();
+		  goc.name = "playerMod";
+		  goc.tag = "testMod";
+
+		  std::cout << goc.name << ", " << goc.tag << "\n";
+	  }
+
+    /*for (auto &e : es.entities()) {
       if (e.hasComponent<GameObjectCmp>()) {
         auto &goc = e.getComponent<GameObjectCmp>();
         goc.name = "playerMod";
@@ -43,7 +55,7 @@ struct GameObjectSys : Sys<GameObjectSys> {
 
         std::cout << goc.name << ", " << goc.tag << "\n";
       }
-    }
+    }*/
 
     std::cout << "\n";
   }
@@ -51,7 +63,22 @@ struct GameObjectSys : Sys<GameObjectSys> {
   void update(EntityMgr &es, float dt) {
     std::cout << "UPDATE\n";
 
-    for (auto &e : es.entities()) {
+	auto entities = es.getEntitiesWith<GameObjectCmp, TransformCmp>();
+	  for (auto components : entities)
+	  {
+		  auto &goc = components.get<GameObjectCmp>();
+		  auto &trx = components.get<TransformCmp>();
+
+		  std::cout << trx.pY << "\n";
+		  std::cout << goc.name << ", " << goc.tag << "\n";
+
+		  goc.name = "player";
+		  goc.tag = "test";
+
+		  trx.pY += 1;
+	  }
+
+    /*for (auto &e : es.entities()) {
       if (e.hasComponent<GameObjectCmp>() && e.hasComponent<TransformCmp>()) {
         auto &goc = e.getComponent<GameObjectCmp>();
         auto &trx = e.getComponent<TransformCmp>();
@@ -64,7 +91,7 @@ struct GameObjectSys : Sys<GameObjectSys> {
 
         trx.pY += 1;
       }
-    }
+    }*/
 
     std::cout << "\n";
   }
@@ -113,5 +140,7 @@ int main(int argc, char **args) {
   }
 
   run();
+
+  std::cin.get();
   return 0;
 }

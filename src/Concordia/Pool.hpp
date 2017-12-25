@@ -49,6 +49,12 @@ public:
     return true;
   }
 
+  inline bool active(uint index)
+  {
+	  assert(index < size());
+	  return m_data[index].first;
+  }
+
   inline T &get(uint index) {
     assert(index < size());
     return static_cast<T &>(m_data[index].second);
@@ -78,5 +84,5 @@ public:
   inline std::vector<std::pair<bool, T>> &data() { return m_data; }
 
 private:
-  std::vector<std::pair<bool, T>> m_data;
+  std::vector<std::pair<bool, T>> m_data {};
 };

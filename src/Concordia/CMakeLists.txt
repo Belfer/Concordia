@@ -4,6 +4,11 @@ set(CONCORDIA_HDRS
   "${CMAKE_CURRENT_SOURCE_DIR}/EventMgr.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/Pool.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/NonCopyable.hpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/GameWorld.hpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ComponentGroup.hpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/Identification.hpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ISystem.hpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/MetaUtils.hpp"
   PARENT_SCOPE
 )
 

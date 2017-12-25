@@ -18,6 +18,7 @@ include_directories(src
 )
 
 add_library(concordia ${CONCORDIA_SRCS} ${CONCORDIA_HDRS})
+set_target_properties(concordia PROPERTIES LINKER_LANGUAGE CXX)
 
 add_executable(${PROJECT_NAME} src/main.cpp)
 
