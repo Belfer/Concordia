@@ -16,18 +16,8 @@
  */
 
 namespace Concordia {
-	//TODO: This does not have to be a seperate class, its just for keeping a static counter
-	struct ICmp {
-	protected:
-		
-	};
-
-	//TODO: Make ICmp and Cmp classes obsolute by creating two static functions -Maiko
-	template <typename E> struct Cmp : public ICmp {
-		static size_t id() {
-			static const size_t s_id = generate_id();
-			return s_id;
-		}
+	template <typename E> struct Cmp {
+		//Maybe someone wants to add some member functions, however I like having PODs as Components
 	};
 
 	class EntityMgr;
@@ -38,6 +28,8 @@ namespace Concordia {
 	private:
 		friend class EntityMgr;
 		Entity(size_t id, EntityMgr &entityMgr) : m_id(id), m_entityMgr(entityMgr) {}
+
+		//TODO: The entity class does not have a assignment operator I think
 
 	public:
 		template <typename C> inline void addComponent(const C &cmp);
@@ -137,24 +129,6 @@ namespace Concordia {
 			return *handle;
 		}
 
-
-		inline CmpPool<void*>& getPool(size_t cmd_id)
-		{
-			assert(false && "this should never be called, it is obsolete");
-
-			auto handle = m_cmpMap[cmd_id];
-			if (handle == nullptr) {
-				//TODO: We do not know the size of the cmp pool...
-				//handle = new CmpPool<void*>{};
-				//m_cmpMap[cmd_id] = handle;
-			}
-
-			//static_assert(false, "We cannot know the size of the type");
-			//TODO: So this does not work either...
-			CmpPool<void*>* cmp_pool = static_cast<CmpPool<void*>*>(handle);
-			return *cmp_pool;
-		}
-
 	public:
 		Entity createEntity() {
 			static size_t s_entityCounter = -1;
@@ -223,21 +197,11 @@ namespace Concordia {
 			assert(false && "Entity doesn't have component!");
 		}
 
-		//Cannot work becaues we do not know the type of the component
-		/*void* getComponent(Entity e, size_t cmp_id)
-		{
-			auto &poolHandle = getPool(cmp_id);
-			for (auto &data : poolHandle.data()) {
-				if (data.first && data.second.entity_id == e.id()) {
-					return data.second.component;
-				}
-			}
 
-			return nullptr;
-		}*/
+		//MAYBE: Add a check to see if CBase is the base of all Cs...
 
-		//TODO: make a variadic getAnyComponent method
-		//TODO: Add a check to see if CBase is the base of all Cs...
+		/// A temporairy function for returning any of Cs... components, casted into CBase.
+		/// This class is temporairy because I should make a system of generating inheritance diagrams
 		template<typename CBase, typename... Cs> 
 		CBase* getAnyComponent(Entity e)
 		{
@@ -314,7 +278,6 @@ namespace Concordia {
 
 	namespace Impl
 	{
-		//TODO: Will this always be true?
 		template<typename ... Cmps>
 		struct HasAllCmpsStruct
 		{
@@ -365,6 +328,7 @@ namespace Concordia {
 			}
 		}
 
+#pragma region first attempt
 		//auto &first_pool = getPool<Cmps>();
 		//size_t amount_of_components = first_pool.size();
 		//std::vector<size_t> available_entities{}; //TODO: call the correct constructor to make it one line.
@@ -387,10 +351,8 @@ namespace Concordia {
 		//
 		//	for (int j = 0; j < pool.size(); ++j)
 		//	{
-		//		//TODO: How can I make pool.GetNInTypelist(i) cast into a void* ComponentElement
 		//		ComponentElement<void*>& comp_element = pool.get(i);
 		//
-		//		//TODO: Add all entities to an array
 		//		pool_ids.push_back(comp_element.entity_id);
 		//	}
 		//
@@ -412,6 +374,7 @@ namespace Concordia {
 		//
 		//	ret.push_back(ent);
 		//}
+#pragma endregion 
 
 		return available_entities;
 	}
