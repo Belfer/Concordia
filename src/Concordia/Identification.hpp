@@ -8,7 +8,7 @@ namespace Concordia
 	}
 
 	template<typename E>
-	constexpr size_t get_id()
+	size_t get_id()
 	{
 		static size_t my_id = generate_id();
 		return my_id;

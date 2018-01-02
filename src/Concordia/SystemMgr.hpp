@@ -17,7 +17,7 @@ namespace Concordia {
 
 	//TODO: Phase this class out
 	template <typename E> class System : public ISystem {
-		/*static size_t id() {
+		/*static size_t element_size() {
 			return get_id<E>();
 		}*/
 
@@ -32,9 +32,11 @@ namespace Concordia {
 			: m_entityMgr(entityMgr), m_eventMgr(eventMgr) {}
 
 		template <typename S, typename... Args> void addSys(Args... args) {
-			auto sys = new S(std::forward<Args>(args)...);
+			static_assert(std::is_base_of<ISystem, S>::value, "The system class needs to inherit from ISystem!");
+
+			S* sys = new S{ std::forward<Args>(args)... };
 			sys->m_eventMgr = &m_eventMgr;
-			m_systems.emplace_back(sys);
+			m_systems.push_back(sys);
 		}
 
 		template <typename Sys> void removeSys() {

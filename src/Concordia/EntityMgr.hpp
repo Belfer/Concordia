@@ -1,6 +1,7 @@
 #pragma once
 
-#include "Pool.hpp"
+//#include "Pool.hpp"
+#include "ComponentPool.hpp"
 #include <assert.h>
 #include <memory>
 #include <stdlib.h>
@@ -16,7 +17,7 @@
  */
 
 namespace Concordia {
-	template <typename E> struct Cmp {
+	template <typename E> struct ICmp {
 		//Maybe someone wants to add some member functions, however I like having PODs as Components
 	};
 
@@ -41,10 +42,14 @@ namespace Concordia {
 
 		template <typename C> inline C &getComponent() const;
 
+		template<typename CBase, typename... Cs> CBase* getAnyComponent() const;
+
 		template <typename C> inline void removeComponent() const;
 
 		template<typename... Cmps>
 		std::vector<EntityComponentDependency<Cmps...>> EntitiesWith() const;
+
+		
 
 		inline size_t id() const { return m_id; }
 
@@ -64,49 +69,49 @@ namespace Concordia {
 		std::vector<size_t> m_cmps;
 	};
 
-	namespace Impl
-	{
-		template<typename T, typename... Cmps>
-		constexpr std::array<void*, sizeof...(Cmps)> GetAllCmps(Entity entity)
-		{
-			std::array<void*, sizeof...(Cmps)> ret;
-
-			ret[0] = entity.getComponent<T>();
-
-
-			return ret;
-		}
-	}
-
 	template<typename ... Cmps>
 	constexpr std::array<void*, sizeof...(Cmps)> GetAllCmps(Entity entity)
 	{
 		return { static_cast<void*>(&entity.getComponent<Cmps>())... };
 	}
 
+	//TODO: Allow structured bindings for this class
 	///A entity which is guaranteed to have these components, for easy use in functions
 	template<typename... Cmps>
 	struct EntityComponentDependency : public ComponentGroup<Cmps...>
 	{
 		using Super = ComponentGroup<Cmps...>;
 		//TODO: Is there a better way to do templated inheritance?
+		using Super::size;
 		using Super::ids;
 		using Super::cmps;
-		using Super::get;
-		using Super::size;
 
 		Entity entity;
 
 		EntityComponentDependency(Entity entity)
-			: ComponentGroup<Cmps...>(), entity(entity)
+			: ComponentGroup<Cmps...>(entity.getComponent<Cmps>()...), entity(entity)
 		{
-			cmps = GetAllCmps<Cmps...>(entity);
 		}
 
 		EntityComponentDependency(Entity entity, Cmps... cmps)
 			: ComponentGroup<Cmps...>(std::forward<Cmps>(cmps)...), entity(entity)
 		{}
 	};
+}
+
+namespace std
+{
+	template<typename... Types>
+	struct tuple_size<Concordia::EntityComponentDependency<Types...>> : public integral_constant<size_t, sizeof...(Types)> {};
+
+	template<std::size_t N, typename... Types>
+	struct tuple_element<N, Concordia::EntityComponentDependency<Types...>> {
+		//using type = decltype( std::declval<Concordia::ComponentGroup<Types...>>().template get<N>());
+		using type = Concordia::Impl::nth_type_in_pack<N, Types...>;
+	};
+}
+
+namespace Concordia{
 
 	class EntityMgr {
 	private:
@@ -117,21 +122,44 @@ namespace Concordia {
 			C component;
 		};
 
-		template <typename C> 
-		using CmpPool = Pool<ComponentElement<C>>;
+		/*template <typename C> 
+		using CmpPool = Pool<ComponentElement<C>>;*/
 
-		template <typename C> inline CmpPool<C> &getPool() {
-			auto handle = static_cast<CmpPool<C> *>(m_cmpMap[get_id<C>()]);
-			if (handle == nullptr) {
-				handle = new CmpPool<C>{};
-				m_cmpMap[get_id<C>()] = handle;
+		template <typename C> 
+		inline CmpPool<C> &getPool() {
+			auto it = m_cmpMap.find(get_id<C>());
+			if(it == m_cmpMap.end())
+			{
+				auto* pool = new CmpPool<C>{};
+				m_cmpMap.insert(it, { get_id<C>(), pool });
+				return *pool;
 			}
-			return *handle;
+
+			auto* pool = it->second;
+
+			return * static_cast<CmpPool<C>*>(pool);
+
+			//auto* handle = static_cast<CmpPool<C>*>(m_cmpMap.at(get_id<C>()));
+			//if (handle == nullptr) {
+			//	handle = new CmpPool<C>{};
+			//	m_cmpMap[get_id<C>()] = handle;
+			//}
+			//return *handle;
+		}
+
+		inline ICmpPool* getPool(size_t cmp_id) {
+			auto it = m_cmpMap.find(cmp_id);
+			if(it != m_cmpMap.end())
+			{
+				return it->second;
+			}
+			return nullptr;
 		}
 
 	public:
 		Entity createEntity() {
-			static size_t s_entityCounter = -1;
+			// We begin counting at 1. So 0 can be used as a inactive flag
+			static size_t s_entityCounter = 0;
 			return Entity(++s_entityCounter, *this);
 		}
 
@@ -154,63 +182,61 @@ namespace Concordia {
 			throw std::exception("Cannot find an entity with the id");
 		}
 
-		template <typename C> void addComponent(Entity e, const C &cmp) {
+		/*template <typename C> void addComponent(Entity e, const C &cmp) {
 			auto &poolHandle = getPool<C>();
 			poolHandle.add({ e.id(), cmp });
-		}
+		}*/
 
 		template <typename C, typename... Args>
 		void addComponent(Entity e, Args... args) {
-			auto &poolHandle = getPool<C>();
-			poolHandle.add({ e.id(), C{args...} });
+			CmpPool<C>& poolHandle = getPool<C>();
+			poolHandle.addComponent(e.id(), C{std::forward<Args>(args)...} );
 		}
 
 		template <typename C> bool hasComponent(Entity e) {
-			auto &poolHandle = getPool<C>();
-			for (auto data : poolHandle.data()) {
-				if (data.first && data.second.entity_id == e.id()) {
-					return true;
-				}
-			}
-			return false;
+			CmpPool<C>& poolHandle = getPool<C>();
+			return poolHandle.hasComponent(e.id());
 		}
 
-		//Cannot work because we do not know the type of the component
-		/*bool hasComponent(Entity e, size_t cmp_id) {
-			auto &poolHandle = getPool(cmp_id);
-			for (auto data : poolHandle.data()) {
-				if (data.first && data.second.entity_id == e.id()) {
-					return true;
-				}
-			}
-			return false;
-		}*/
+		bool hasComponent(Entity e, size_t cmp_id) {
+			auto* pool = getPool(cmp_id);
+			if (!pool)
+				return false;
+			return pool->hasComponent(e.id());
+		}
 
 		//TODO: return a pointer and don't throw an error
 		template <typename C> C &getComponent(Entity e) {
-			auto &poolHandle = getPool<C>();
-			for (auto &data : poolHandle.data()) {
-				if (data.first && data.second.entity_id == e.id()) {
-					return data.second.component;
+			CmpPool<C>& poolHandle = getPool<C>();
+			auto sz = poolHandle.size();
+			for (int i = 0; i < poolHandle.size(); ++i)
+			{
+				if(poolHandle.entity_ids[i] == e.id()){
+					C* cmp = poolHandle.getComponentPtr(i);
+					assert(cmp != nullptr);
+					return *cmp;
 				}
 			}
+			EmptyFunction();
 			assert(false && "Entity doesn't have component!");
+			throw std::exception("cannot find component"); 
 		}
 
 
-		//MAYBE: Add a check to see if CBase is the base of all Cs...
 
 		/// A temporairy function for returning any of Cs... components, casted into CBase.
-		/// This class is temporairy because I should make a system of generating inheritance diagrams
+		/// This class is temporairy because I should make a system of generating inheritance graphs
 		template<typename CBase, typename... Cs> 
 		CBase* getAnyComponent(Entity e)
 		{
-			ComponentGroup<Cs...> cmps;
-			for (int i = 0; i < cmps.size; ++i)
+			//MAYBE: Add a check to see if CBase is the base of all Cs...
+			using CmpGroup = ComponentGroup<Cs...>;
+			for (int i = 0; i < CmpGroup::size; ++i)
 			{
-				if(void* cmp = getComponent(e, cmps.ids[i]))
+				if(hasComponent(e, CmpGroup::ids[i]))
 				{
-					return static_cast<CBase*>(cmp);
+					ICmpPool* pool = getPool(CmpGroup::ids[i]);
+					return reinterpret_cast<CBase*>(pool->getRawComponent(e.id()));
 				}
 			}
 
@@ -218,34 +244,17 @@ namespace Concordia {
 		}
 
 		template <typename C> void removeComponent(Entity e) {
-			auto poolHandle = getPool<C>();
-			for (auto data : poolHandle.data()) {
-				if (data.first == e.id()) {
-					poolHandle.remove(data);
-				}
-			}
+			CmpPool<C>& poolHandle = getPool<C>();
+			poolHandle.removeComponent(e.id());
 		}
 
 		inline std::vector<Entity>& entities() { return m_entities; }
 
-		/// GetNInTypelist a list of entities with those components
 		template<typename... Cmps>
-		std::vector<EntityComponentDependency<Cmps...>> getEntitiesWith()
-		{
-			static_assert(sizeof...(Cmps) > 0, "There needs to be at least one component, \
-			if you want a list of all entities, call getEntities()");
-
-			ComponentGroup<Cmps...> group;
-
-			return getEntitiesWith(group); 
-		}
-
-		/// overload for a cmp group with built in id list
-		template<typename... Cmps>
-		std::vector<EntityComponentDependency<Cmps...>> getEntitiesWith(const ComponentGroup<Cmps...>& group);
+		std::vector<EntityComponentDependency<Cmps...>> getEntitiesWith();
 
 	private:
-		std::unordered_map<size_t, IPool*> m_cmpMap;
+		std::unordered_map<size_t, ICmpPool*> m_cmpMap;
 		std::vector<Entity> m_entities;
 	};
 
@@ -264,6 +273,12 @@ namespace Concordia {
 
 	template <typename C> inline C &Entity::getComponent() const {
 		return m_entityMgr.getComponent<C>(*this);
+	}
+
+	template <typename CBase, typename ... Cs>
+	CBase* Entity::getAnyComponent() const
+	{
+		return m_entityMgr.getAnyComponent<CBase, Cs...>(*this);
 	}
 
 	template <typename C> inline void Entity::removeComponent() const {
@@ -309,7 +324,7 @@ namespace Concordia {
 	bool HasAllCmps(Entity entity) { return Impl::HasAllCmpsStruct<Cmps...>{entity}.value; }
 
 	template <typename ... Cmps>
-	std::vector<EntityComponentDependency<Cmps...>> EntityMgr::getEntitiesWith(const ComponentGroup<Cmps...>& group)
+	std::vector<EntityComponentDependency<Cmps...>> EntityMgr::getEntitiesWith()
 	{
 		static_assert(sizeof...(Cmps) > 0, "There needs to be at least one component, "
 			"if you want a list of all entities, call getEntities()");

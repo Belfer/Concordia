@@ -9,6 +9,9 @@ set(CONCORDIA_HDRS
   "${CMAKE_CURRENT_SOURCE_DIR}/Identification.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ISystem.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/MetaUtils.hpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/MetaDebugging.hpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ComponentPool.hpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/CommonTypes.hpp"
   PARENT_SCOPE
 )
 

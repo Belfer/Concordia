@@ -2,87 +2,93 @@
 
 #include <assert.h>
 #include <memory>
-#include <stdlib.h>
 #include <unordered_map>
 #include <utility>
 #include <vector>
+#include "CommonTypes.hpp"
 
-using uint = unsigned int;
+namespace Concordia {
 
-struct IPool {
-  virtual ~IPool() {}
-  virtual void clear() = 0;
-};
+	/*
+	 * @brief A generic Pool feature, now superseeded by @ICmpPool and @CmpPool
+	 * Because those classes are more specific to the implementation of this ECS
+	 */
 
-template <typename T> class Pool : public IPool {
-public:
-  Pool(int size = 100) { resize(size); }
-  virtual ~Pool() {}
+	struct IPool {
+		virtual ~IPool() {}
+		virtual void clear() = 0;
+	};
 
-  inline bool empty() const { return m_data.empty(); }
+	template <typename T> class Pool : public IPool {
+	public:
+		Pool(int size = 100) { resize(size); }
+		virtual ~Pool() {}
 
-  inline uint size() const { return m_data.size(); }
+		inline bool empty() const { return m_data.empty(); }
 
-  inline void resize(int n) {
-    const size_t dataSize = size();
-    m_data.resize(n);
-    if (size() > dataSize) {
-      for (auto it = m_data.begin() + dataSize; it != m_data.end(); ++it) {
-        it->first = false;
-      }
-    }
-  }
+		inline uint size() const { return m_data.size(); }
 
-  inline void clear() { m_data.clear(); }
+		inline void resize(int n) {
+			const size_t dataSize = size();
+			m_data.resize(n);
+			if (size() > dataSize) {
+				for (auto it = m_data.begin() + dataSize; it != m_data.end(); ++it) {
+					it->first = false;
+				}
+			}
+		}
 
-  inline void remove(const T &object) {
-    m_data.erase(std::remove(m_data.begin(), m_data.end(), object),
-                 m_data.end());
-  }
+		inline void clear() { m_data.clear(); }
 
-  inline void remove(uint index) { m_data.erase(m_data.begin() + index); }
+		inline void remove(const T &object) {
+			m_data.erase(std::remove(m_data.begin(), m_data.end(), object),
+				m_data.end());
+		}
 
-  inline bool set(uint index, const T &object) {
-    assert(index < size());
-    m_data[index].first = true;
-    m_data[index].second = object;
-    return true;
-  }
+		inline void remove(uint index) { m_data.erase(m_data.begin() + index); }
 
-  inline bool active(uint index)
-  {
-	  assert(index < size());
-	  return m_data[index].first;
-  }
+		inline bool set(uint index, const T &object) {
+			assert(index < size());
+			m_data[index].first = true;
+			m_data[index].second = object;
+			return true;
+		}
 
-  inline T &get(uint index) {
-    assert(index < size());
-    return static_cast<T &>(m_data[index].second);
-  }
+		inline bool active(uint index)
+		{
+			assert(index < size());
+			return m_data[index].first;
+		}
 
-  inline T &recycle() {
-    for (auto &e : m_data) {
-      if (!e.first) {
-        e.first = true;
-        return static_cast<T &>(e.second);
-      }
-    }
+		inline T &get(uint index) {
+			assert(index < size());
+			return static_cast<T &>(m_data[index].second);
+		}
 
-    resize(size() * 2);
-    return recycle();
-  }
+		inline T &recycle() {
+			for (auto &e : m_data) {
+				if (!e.first) {
+					e.first = true;
+					return static_cast<T &>(e.second);
+				}
+			}
 
-  inline void add(const T &object) {
-    auto &obj = recycle();
-    obj = object;
-  }
+			resize(size() * 2);
+			return recycle();
+		}
 
-  inline T &operator[](uint index) { return m_data[index].second; }
+		inline void add(const T &object) {
+			auto &obj = recycle();
+			obj = object;
+		}
 
-  inline const T &operator[](uint index) const { return m_data[index].second; }
+		inline T &operator[](uint index) { return m_data[index].second; }
 
-  inline std::vector<std::pair<bool, T>> &data() { return m_data; }
+		inline const T &operator[](uint index) const { return m_data[index].second; }
 
-private:
-  std::vector<std::pair<bool, T>> m_data {};
-};
+		inline std::vector<std::pair<bool, T>> &data() { return m_data; }
+
+	private:
+		std::vector<std::pair<bool, T>> m_data{};
+	};
+}

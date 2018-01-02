@@ -1,6 +1,7 @@
 #include "Concordia/EntityMgr.hpp"
 #include "Concordia/SystemMgr.hpp"
 #include "Concordia/EventMgr.hpp"
+#include "Concordia/CommonTypes.hpp"
 #include <iostream>
 #include <string>
 
@@ -16,7 +17,7 @@ struct SystemEventsReceiver : Receiver {
   }
 };
 
-struct GameObjectCmp : Cmp<GameObjectCmp> {
+struct GameObjectCmp : ICmp<GameObjectCmp> {
   GameObjectCmp() {}
   GameObjectCmp(const std::string &name, const std::string &tag)
       : name(name), tag(tag) {}
@@ -24,13 +25,41 @@ struct GameObjectCmp : Cmp<GameObjectCmp> {
   std::string tag;
 };
 
-struct TransformCmp : Cmp<TransformCmp> {
+struct TransformCmp : ICmp<TransformCmp> {
   TransformCmp() {}
   TransformCmp(float pX, float pY, float sX, float sY, float rot)
       : pX(pX), pY(pY), sX(sX), sY(sY), rot(rot) {}
   float pX = 0, pY = 0;
   float sX = 0, sY = 0;
   float rot = 0;
+};
+
+enum class ColliderType
+{
+	BOX,
+	CIRCLE
+};
+
+struct ColliderCmp
+{
+	const ColliderType type;
+
+	ColliderCmp(ColliderType type) : type(type){}
+	//virtual ~ColliderCmp(){};
+};
+
+struct BoxCollider : ColliderCmp
+{
+	BoxCollider() : ColliderCmp(ColliderType::BOX)
+	{
+	}
+};
+
+struct CircleCollider : ColliderCmp
+{
+	CircleCollider() : ColliderCmp(ColliderType::CIRCLE)
+	{
+	}
 };
 
 struct GameObjectSys : public System<GameObjectSys> {
@@ -40,7 +69,7 @@ struct GameObjectSys : public System<GameObjectSys> {
 	auto entities = es.getEntitiesWith<GameObjectCmp>();
 	  for (auto components : entities)
 	  {
-		  auto& goc = components.get<GameObjectCmp>();
+		  GameObjectCmp& goc = components.get<GameObjectCmp>();
 		  goc.name = "playerMod";
 		  goc.tag = "testMod";
 
@@ -56,7 +85,7 @@ struct GameObjectSys : public System<GameObjectSys> {
         std::cout << goc.name << ", " << goc.tag << "\n";
       }
     }*/
-
+    
     std::cout << "\n";
   }
 
@@ -64,34 +93,19 @@ struct GameObjectSys : public System<GameObjectSys> {
     std::cout << "UPDATE\n";
 
 	auto entities = es.getEntitiesWith<GameObjectCmp, TransformCmp>();
-	  for (auto components : entities)
+	  for (auto& components : entities)
 	  {
-		  auto &goc = components.get<GameObjectCmp>();
-		  auto &trx = components.get<TransformCmp>();
+		  auto& tr = components.get<TransformCmp>();
+		  auto& obj = components.get<GameObjectCmp>();
 
-		  std::cout << trx.pY << "\n";
-		  std::cout << goc.name << ", " << goc.tag << "\n";
+		  std::cout << tr.pY << "\n";
+		  std::cout << obj.name << ", " << obj.tag << "\n";
 
-		  goc.name = "player";
-		  goc.tag = "test";
+		  obj.name = "player";
+		  obj.tag = "test";
 
-		  trx.pY += 1;
+		  tr.pY += 1;
 	  }
-
-    /*for (auto &e : es.entities()) {
-      if (e.hasComponent<GameObjectCmp>() && e.hasComponent<TransformCmp>()) {
-        auto &goc = e.getComponent<GameObjectCmp>();
-        auto &trx = e.getComponent<TransformCmp>();
-
-        std::cout << trx.pY << "\n";
-        std::cout << goc.name << ", " << goc.tag << "\n";
-
-        goc.name = "player";
-        goc.tag = "test";
-
-        trx.pY += 1;
-      }
-    }*/
 
     std::cout << "\n";
   }
@@ -102,6 +116,25 @@ struct GameObjectSys : public System<GameObjectSys> {
     getEventMgr().broadcast<SystemEvent>();
     std::cout << "CLEAN\n\n";
   }
+};
+
+struct PhysicsSystem : System<PhysicsSystem>
+{
+	void init(EntityMgr& es) override{}
+	void update(EntityMgr& es, float dt) override
+	{
+		auto entities = es.getEntitiesWith<GameObjectCmp, TransformCmp>();
+		for (auto& components : entities)
+		{
+			ColliderCmp* collider = components.entity.getAnyComponent<ColliderCmp, BoxCollider, CircleCollider>();
+			if(collider)
+			{
+				std::cout << "Collider type: " << (int)collider->type << '\n';
+			}
+		}
+	}
+	void render(EntityMgr& es) override{}
+	void clean(EntityMgr& es) override{}
 };
 
 EventMgr eventMgr;
@@ -131,13 +164,45 @@ void run() {
 
 int main(int argc, char **args) {
   systemMgr.addSys<GameObjectSys>();
+  systemMgr.addSys<PhysicsSystem>();
 
   for (uint i = 0; i < 10; ++i) {
     Entity e = entityMgr.createEntity();
-    e.addComponent<GameObjectCmp>("player", "test");
+    e.addComponent<GameObjectCmp>("player", std::string( "test" ) + std::to_string(i));
     e.addComponent<TransformCmp>();
     entityMgr.addEntity(e);
   }
+
+  Entity e_box = entityMgr.createEntity();
+  e_box.addComponent<GameObjectCmp>("wall", "box_col");
+  e_box.addComponent<TransformCmp>();
+  e_box.addComponent<BoxCollider>();
+  entityMgr.addEntity(e_box);
+
+  auto& objh = e_box.getComponent<GameObjectCmp>();
+
+  Entity e_box2 = entityMgr.createEntity();
+  e_box2.addComponent<GameObjectCmp>("wall2", "box_col");
+  e_box2.addComponent<TransformCmp>();
+  e_box2.addComponent<BoxCollider>();
+  entityMgr.addEntity(e_box2);
+
+  Entity e_cir = entityMgr.createEntity();
+  e_cir.addComponent<GameObjectCmp>("ball", "circle_col");
+  e_cir.addComponent<TransformCmp>();
+  e_cir.addComponent<CircleCollider>();
+  entityMgr.addEntity(e_cir);
+
+  Entity e_cir2 = entityMgr.createEntity();
+  e_cir2.addComponent<GameObjectCmp>("ball", "circle_col");
+  e_cir2.addComponent<TransformCmp>();
+  e_cir2.addComponent<CircleCollider>();
+  entityMgr.addEntity(e_cir2);
+
+  auto& obj = e_box.getComponent<GameObjectCmp>();
+  auto& cobj = e_cir.getComponent<GameObjectCmp>();
+  CircleCollider& col_cobj = e_cir.getComponent<CircleCollider>();
+  CircleCollider& ddddd = e_cir2.getComponent<CircleCollider>();
 
   run();
 
