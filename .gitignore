@@ -12,3 +12,5 @@ build/*
 #Visual studio settings
 CMakeSettings.json
 .vs/
+
+InitializeGitRepo.bat

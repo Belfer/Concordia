@@ -17,3 +17,7 @@ constexpr void StaticAssertPrint()
 inline void EmptyFunction()
 {
 }
+
+inline volatile void ForceEmptyFunction()
+{
+}

@@ -1,10 +1,9 @@
 #pragma once
 
-//#include "Pool.hpp"
 #include "ComponentPool.hpp"
-#include <assert.h>
+#include <cassert>
 #include <memory>
-#include <stdlib.h>
+#include <cstdlib>
 #include <unordered_map>
 #include <utility>
 #include <vector>
@@ -33,25 +32,28 @@ namespace Concordia {
 		//TODO: The entity class does not have a assignment operator I think
 
 	public:
-		template <typename C> inline void addComponent(const C &cmp);
+		template <typename C>
+		void addComponent(const C &cmp);
 
 		template <typename C, typename... Args>
-		inline void addComponent(Args... args);
+		void addComponent(Args... args);
 
-		template <typename C> inline bool hasComponent() const;
+		template <typename C>
+		bool hasComponent() const;
 
-		template <typename C> inline C &getComponent() const;
+		template <typename C>
+		C* getComponent() const;
 
 		template<typename CBase, typename... Cs> CBase* getAnyComponent() const;
 
-		template <typename C> inline void removeComponent() const;
+		template <typename C>
+		void removeComponent() const;
 
 		template<typename... Cmps>
 		std::vector<EntityComponentDependency<Cmps...>> EntitiesWith() const;
 
-		
 
-		inline size_t id() const { return m_id; }
+		size_t id() const { return m_id; }
 
 		friend bool operator==(const Entity& a, const Entity& b)
 		{
@@ -72,7 +74,7 @@ namespace Concordia {
 	template<typename ... Cmps>
 	constexpr std::array<void*, sizeof...(Cmps)> GetAllCmps(Entity entity)
 	{
-		return { static_cast<void*>(&entity.getComponent<Cmps>())... };
+		return { static_cast<void*>(entity.getComponent<Cmps>())... };
 	}
 
 	//TODO: Allow structured bindings for this class
@@ -89,7 +91,7 @@ namespace Concordia {
 		Entity entity;
 
 		EntityComponentDependency(Entity entity)
-			: ComponentGroup<Cmps...>(entity.getComponent<Cmps>()...), entity(entity)
+			: ComponentGroup<Cmps...>(*entity.getComponent<Cmps>()...), entity(entity)
 		{
 		}
 
@@ -122,11 +124,11 @@ namespace Concordia{
 			C component;
 		};
 
-		/*template <typename C> 
-		using CmpPool = Pool<ComponentElement<C>>;*/
-
-		template <typename C> 
-		inline CmpPool<C> &getPool() {
+#ifdef _DEBUG
+	public:
+#endif
+		template <typename C>
+		CmpPool<C> &getPool() {
 			auto it = m_cmpMap.find(get_id<C>());
 			if(it == m_cmpMap.end())
 			{
@@ -138,16 +140,9 @@ namespace Concordia{
 			auto* pool = it->second;
 
 			return * static_cast<CmpPool<C>*>(pool);
-
-			//auto* handle = static_cast<CmpPool<C>*>(m_cmpMap.at(get_id<C>()));
-			//if (handle == nullptr) {
-			//	handle = new CmpPool<C>{};
-			//	m_cmpMap[get_id<C>()] = handle;
-			//}
-			//return *handle;
 		}
 
-		inline ICmpPool* getPool(size_t cmp_id) {
+		ICmpPool* getPool(size_t cmp_id) {
 			auto it = m_cmpMap.find(cmp_id);
 			if(it != m_cmpMap.end())
 			{
@@ -206,20 +201,19 @@ namespace Concordia{
 		}
 
 		//TODO: return a pointer and don't throw an error
-		template <typename C> C &getComponent(Entity e) {
+		template <typename C> C* getComponent(Entity e) {
 			CmpPool<C>& poolHandle = getPool<C>();
 			auto sz = poolHandle.size();
-			for (int i = 0; i < poolHandle.size(); ++i)
+			for (uint i = 0; i < poolHandle.size(); ++i)
 			{
 				if(poolHandle.entity_ids[i] == e.id()){
 					C* cmp = poolHandle.getComponentPtr(i);
-					assert(cmp != nullptr);
-					return *cmp;
+					return cmp;
 				}
 			}
-			EmptyFunction();
-			assert(false && "Entity doesn't have component!");
-			throw std::exception("cannot find component"); 
+
+			//assert(false && "Entity doesn't have component!");
+			return nullptr;
 		}
 
 
@@ -248,7 +242,7 @@ namespace Concordia{
 			poolHandle.removeComponent(e.id());
 		}
 
-		inline std::vector<Entity>& entities() { return m_entities; }
+		std::vector<Entity>& entities() { return m_entities; }
 
 		template<typename... Cmps>
 		std::vector<EntityComponentDependency<Cmps...>> getEntitiesWith();
@@ -258,20 +252,23 @@ namespace Concordia{
 		std::vector<Entity> m_entities;
 	};
 
-	template <typename C> inline void Entity::addComponent(const C &cmp) {
+	template <typename C>
+	void Entity::addComponent(const C &cmp) {
 		m_entityMgr.addComponent(id(), cmp);
 	}
 
 	template <typename C, typename... Args>
-	inline void Entity::addComponent(Args... args) {
+	void Entity::addComponent(Args... args) {
 		m_entityMgr.addComponent<C>(*this, std::forward<Args>(args)...);
 	}
 
-	template <typename C> inline bool Entity::hasComponent() const {
+	template <typename C>
+	bool Entity::hasComponent() const {
 		return m_entityMgr.hasComponent<C>(*this);
 	}
 
-	template <typename C> inline C &Entity::getComponent() const {
+	template <typename C>
+	C* Entity::getComponent() const {
 		return m_entityMgr.getComponent<C>(*this);
 	}
 
@@ -281,7 +278,8 @@ namespace Concordia{
 		return m_entityMgr.getAnyComponent<CBase, Cs...>(*this);
 	}
 
-	template <typename C> inline void Entity::removeComponent() const {
+	template <typename C>
+	void Entity::removeComponent() const {
 		m_entityMgr.removeComponent<C>();
 	}
 

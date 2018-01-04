@@ -63,7 +63,8 @@ struct CircleCollider : ColliderCmp
 };
 
 struct GameObjectSys : public System<GameObjectSys> {
-  void init(EntityMgr &es) {
+  void init(EntityMgr &es) override
+  {
     std::cout << "INIT\n";
 
 	auto entities = es.getEntitiesWith<GameObjectCmp>();
@@ -89,7 +90,8 @@ struct GameObjectSys : public System<GameObjectSys> {
     std::cout << "\n";
   }
 
-  void update(EntityMgr &es, float dt) {
+  void update(EntityMgr &es, float dt) override
+  {
     std::cout << "UPDATE\n";
 
 	auto entities = es.getEntitiesWith<GameObjectCmp, TransformCmp>();
@@ -97,7 +99,7 @@ struct GameObjectSys : public System<GameObjectSys> {
 	  {
 		  auto& tr = components.get<TransformCmp>();
 		  auto& obj = components.get<GameObjectCmp>();
-
+		  
 		  std::cout << tr.pY << "\n";
 		  std::cout << obj.name << ", " << obj.tag << "\n";
 
@@ -110,9 +112,10 @@ struct GameObjectSys : public System<GameObjectSys> {
     std::cout << "\n";
   }
 
-  void render(EntityMgr &es) { std::cout << "RENDER\n\n"; }
+  void render(EntityMgr &es) override { std::cout << "RENDER\n\n"; }
 
-  void clean(EntityMgr &es) {
+  void clean(EntityMgr &es) override
+  {
     getEventMgr().broadcast<SystemEvent>();
     std::cout << "CLEAN\n\n";
   }
@@ -179,8 +182,6 @@ int main(int argc, char **args) {
   e_box.addComponent<BoxCollider>();
   entityMgr.addEntity(e_box);
 
-  auto& objh = e_box.getComponent<GameObjectCmp>();
-
   Entity e_box2 = entityMgr.createEntity();
   e_box2.addComponent<GameObjectCmp>("wall2", "box_col");
   e_box2.addComponent<TransformCmp>();
@@ -198,11 +199,6 @@ int main(int argc, char **args) {
   e_cir2.addComponent<TransformCmp>();
   e_cir2.addComponent<CircleCollider>();
   entityMgr.addEntity(e_cir2);
-
-  auto& obj = e_box.getComponent<GameObjectCmp>();
-  auto& cobj = e_cir.getComponent<GameObjectCmp>();
-  CircleCollider& col_cobj = e_cir.getComponent<CircleCollider>();
-  CircleCollider& ddddd = e_cir2.getComponent<CircleCollider>();
 
   run();
 

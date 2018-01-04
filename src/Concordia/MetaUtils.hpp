@@ -23,6 +23,6 @@ namespace Concordia
 		};
 	}
 
-	template<unsigned int I, typename... TypeList>
-	using GetNInTypelist = typename Impl::GetStruct<I, TypeList...>::type;
+	template<unsigned int N, typename... TypeList>
+	using GetNInTypelist = typename Impl::GetStruct<N, TypeList...>::type;
 }

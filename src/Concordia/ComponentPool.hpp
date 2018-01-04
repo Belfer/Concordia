@@ -25,7 +25,7 @@ namespace Concordia
 			: component_id(cmp_id), element_size(elem_size), entities(0), capacity(entity_amount)
 		{
 			cmps_data = new byte[element_size * capacity];
-			for (int i = 0; i < element_size*capacity; ++i)
+			for (uint i = 0; i < element_size*capacity; ++i)
 			{
 				cmps_data[i] = 0;
 			}
@@ -70,7 +70,7 @@ namespace Concordia
 
 			entity_ids.erase(entity_ids.begin() + index);
 			unsigned cmp_begin = index * element_size;
-			for (int i = 0; i < element_size; ++i)
+			for (uint i = 0; i < element_size; ++i)
 			{
 				cmps_data[cmp_begin + i] = 0;
 			}
@@ -88,7 +88,7 @@ namespace Concordia
 
 		int getIndexFromId(size_t entity_id) const
 		{
-			for (int i = 0; i < entities; ++i) {
+			for (uint i = 0; i < entities; ++i) {
 				if (entity_ids[i] == entity_id) {
 					return i;
 				}
@@ -113,7 +113,7 @@ namespace Concordia
 			checkSize();
 
 			unsigned cmp_offset = element_size * entities;
-			for (int i = 0; i < element_size; ++i) {
+			for (uint i = 0; i < element_size; ++i) {
 				cmps_data[cmp_offset + i] = comp[i];
 			}
 
@@ -129,7 +129,7 @@ namespace Concordia
 				capacity += 50;
 				cmps_data = new byte[element_size * capacity];
 
-				for (int i = 0; i < old_capacity; ++i) {
+				for (uint i = 0; i < old_capacity; ++i) {
 					cmps_data[i] = old_data[i];
 				}
 
@@ -141,10 +141,12 @@ namespace Concordia
 	template<typename C>
 	class CmpPool : public ICmpPool
 	{
+#ifdef _DEBUG
+		const char* cmp_name = typeid(C).name();
+#endif
 	public:
 		explicit CmpPool(unsigned int entity_amount = 100) : ICmpPool(get_id<C>(), sizeof(C), entity_amount)
 		{
-			
 		}
 
 		C* getComponentPtr(unsigned int index = 0)
@@ -157,13 +159,13 @@ namespace Concordia
 			return reinterpret_cast<const C*>(cmps_data) + index;
 		}
 		
-		C& getComponent(size_t entity_id)
+		C* getComponent(size_t entity_id)
 		{
 			int index = getIndexFromId(entity_id);
 			if (index == -1)
 				return nullptr;
 
-			return getComponentPtr()[index];
+			return getComponentPtr(index);
 		}
 
 		const C& addComponent(size_t entity_id, const C& component)
