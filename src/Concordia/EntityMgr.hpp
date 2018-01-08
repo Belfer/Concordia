@@ -11,10 +11,6 @@
 #include "Identification.hpp"
 #include "MetaUtils.hpp"
 
-/**
- * @brief Entities
- */
-
 namespace Concordia {
 	template <typename E> struct ICmp {
 		//Maybe someone wants to add some member functions, however I like having PODs as Components
