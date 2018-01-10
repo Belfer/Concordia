@@ -95,7 +95,6 @@ struct GameObjectSys : public System<GameObjectSys> {
     std::cout << "UPDATE\n";
 
 	auto entities = es.getEntitiesWith<GameObjectCmp, TransformCmp>();
-	std::cout << "size: " << entities.size() << '\n';
 	  for (auto& components : entities)
 	  {
 		  auto& tr = components.get<TransformCmp>();

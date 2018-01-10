@@ -188,11 +188,20 @@ namespace Concordia{
 			return poolHandle.containsId(e.id());
 		}
 
+		template <typename C> bool hasComponent(size_t e_id) {
+			Pool<C>& poolHandle = getPool<C>();
+			return poolHandle.containsId(e_id);
+		}
+
 		bool hasComponent(Entity e, size_t cmp_id) {
+			return hasComponent(e.id(), cmp_id);
+		}
+
+		bool hasComponent(size_t e_id, size_t cmp_id) {
 			auto* pool = getPool(cmp_id);
 			if (!pool)
 				return false;
-			return pool->containsId(e.id());
+			return pool->containsId(e_id);
 		}
 
 		template <typename C> C* getComponent(Entity e) {
@@ -200,7 +209,41 @@ namespace Concordia{
 			return poolHandle.getById(e.id());
 		}
 
+		template <typename C> C* getComponent(size_t e_id) {
+			Pool<C>& poolHandle = getPool<C>();
+			return poolHandle.getById(e_id);
+		}
 
+
+	private:
+		template<typename C, typename... Cs>
+		struct getAnyComponentImpl{
+
+			void* value;
+
+			explicit getAnyComponentImpl(Entity& e) {
+				//TODO: Remove after debugging
+				auto id = get_id<C>();
+				if (e.hasComponent<C>())
+					value = e.getComponent<C>();
+				else
+					value = getAnyComponentImpl<Cs...>(e).value;
+			}
+		};
+
+		template<typename C>
+		struct getAnyComponentImpl<C>
+		{
+			void* value;
+
+			explicit getAnyComponentImpl(Entity& e) {
+				if (e.hasComponent<C>())
+					value = e.getComponent<C>();
+				else
+					value = nullptr;
+			}
+		};
+	public:
 
 		/// A temporairy function for returning any of Cs... components, casted into CBase.
 		/// This class is temporairy because I should make a system of generating inheritance graphs
@@ -209,8 +252,7 @@ namespace Concordia{
 		{
 			//MAYBE: Add a check to see if CBase is the base of all Cs...
 			
-			//TODO: Rewrite this method with typesafe recursion.
-			return nullptr;
+			return static_cast<CBase*>(getAnyComponentImpl<Cs...>(e).value);
 		}
 
 		template <typename C> void removeComponent(Entity e) {
