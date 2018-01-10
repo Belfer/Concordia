@@ -62,6 +62,7 @@ namespace Concordia
 		template<size_t I, typename T, typename... Pack>
 		struct n_type_in_pack_impl<I, T, Pack...>
 		{
+			static_assert(I < sizeof...(Pack));
 			using type = typename n_type_in_pack_impl<I - 1, Pack...>::type;
 		};
 
@@ -77,13 +78,12 @@ namespace Concordia
 			using type = T;
 		};
 
-		//TODO: Move to MetaUtils.hpp
-		//TODO: Add a check to c if I < sizeof...(Pack)
+		//TODO: Use the one in MetaUtils.hpp
 		template<size_t I, typename... Pack>
 		using nth_type_in_pack = typename n_type_in_pack_impl<I, Pack...>::type;
 	}
 
-	/// Immutable group of mutable components
+	/// Immutable group of components
 	template<typename ...Args>
 	struct ComponentGroup
 	{
@@ -92,12 +92,6 @@ namespace Concordia
 		static const std::array<size_t, size> ids;
 
 		const std::array<void*, size> cmps;
-
-
-		/// Default constructor initialises the ids and sets the cmps to nullptr
-		/*constexpr ComponentGroup()
-			: cmps{}
-		{ }*/
 
 		constexpr ComponentGroup(Args&... args)
 			: cmps{ Impl::to_void_ptr(args)... }
@@ -176,7 +170,6 @@ namespace Concordia
 
 namespace std
 {
-	//TODO: Does this have any value besides structured bindings in c++17?
 	template<typename... Types>
 	struct tuple_size<Concordia::ComponentGroup<Types...>> : public integral_constant<size_t, sizeof...(Types)> {};
 

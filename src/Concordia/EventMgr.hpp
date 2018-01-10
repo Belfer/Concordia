@@ -14,7 +14,6 @@ namespace Concordia {
 	 * @brief Events
 	 */
 
-	 //TODO: Consider renaming sig to 'ISignal' for clarity
 	struct ISignal {
 		virtual ~ISignal() {}
 		virtual void operator()(const void *p) = 0;
@@ -42,8 +41,7 @@ namespace Concordia {
 		std::function<void(const E &)> m_sigFn;
 	};
 
-	//TODO: Consider renaming to SignalHandle
-	using SigHandle = std::pair<size_t, size_t>;
+	using SignalHandle = std::pair<size_t, size_t>;
 
 	struct Receiver {
 		~Receiver() {
@@ -53,18 +51,17 @@ namespace Concordia {
 
 	private:
 		friend class EventMgr;
-		std::function<void(std::vector<SigHandle> &)> m_clearSigFn;
-		std::vector<SigHandle> m_sigHandles;
+		std::function<void(std::vector<SignalHandle> &)> m_clearSigFn;
+		std::vector<SignalHandle> m_sigHandles;
 	};
 
 	class EventMgr : NonCopyable {
 	public:
-		//TODO: What does this even stand for?
 		using SignalPtr = std::shared_ptr<ISignal>;
 
 		EventMgr() {}
 		~EventMgr() {
-			// TODO, clean memory
+			// TODO: does RAII clean up everything already?
 		}
 
 		template <typename E, typename Receiver> void subscribe(Receiver &receiver) {
@@ -115,7 +112,7 @@ namespace Concordia {
 			return m_bus[eId];
 		}
 
-		void clearSignals(std::vector<SigHandle> &sigHandles) {
+		void clearSignals(std::vector<SignalHandle> &sigHandles) {
 			for (auto handle : sigHandles) {
 				auto &sigSlots = slotsFor(handle.first);
 				sigSlots.second.erase(handle.second);

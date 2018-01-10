@@ -1,8 +1,8 @@
 #pragma once
 
-#include <assert.h>
+#include <cassert>
 #include <memory>
-#include <stdlib.h>
+#include <cstdlib>
 #include <unordered_map>
 #include <utility>
 #include <vector>
@@ -15,16 +15,9 @@ namespace Concordia {
 
 	class EventMgr;
 
-	//TODO: Phase this class out
 	template <typename E> class System : public ISystem {
-		/*static size_t element_size() {
-			return get_id<E>();
-		}*/
 
 	};
-
-	//TODO: Consider not using a type alias for readability
-	//using Systems = std::vector<ISystem *>;
 
 	class SystemMgr {
 	public:
@@ -40,8 +33,10 @@ namespace Concordia {
 		}
 
 		template <typename Sys> void removeSys() {
-			// TODO
+			// TODO: remove system
 		}
+
+		//TODO: Create method for removing system by pointer/ref
 
 		inline void init() {
 			for (auto &sys : m_systems) {

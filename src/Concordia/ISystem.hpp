@@ -4,8 +4,7 @@ namespace Concordia
 	class EventMgr;
 	class EntityMgr;
 
-	//IDID: Make this a seperate file so classes that implement this can only include this skeleton
-	//IDID: Make this a class, it is clearly not a data structure
+	
 	class ISystem {
 	public:
 		virtual ~ISystem(){};
@@ -26,6 +25,6 @@ namespace Concordia
 
 	private:
 		friend class SystemMgr;
-		EventMgr* m_eventMgr;
+		EventMgr* m_eventMgr = nullptr;
 	};
 }
