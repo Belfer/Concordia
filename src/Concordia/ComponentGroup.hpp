@@ -62,7 +62,6 @@ namespace Concordia
 		template<size_t I, typename T, typename... Pack>
 		struct n_type_in_pack_impl<I, T, Pack...>
 		{
-			static_assert(I < sizeof...(Pack));
 			using type = typename n_type_in_pack_impl<I - 1, Pack...>::type;
 		};
 
@@ -78,6 +77,7 @@ namespace Concordia
 			using type = T;
 		};
 
+		//TODO: Add static_assert range check
 		//TODO: Use the one in MetaUtils.hpp
 		template<size_t I, typename... Pack>
 		using nth_type_in_pack = typename n_type_in_pack_impl<I, Pack...>::type;
