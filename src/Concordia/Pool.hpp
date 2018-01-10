@@ -6,6 +6,7 @@
 #include <utility>
 #include <vector>
 #include "CommonTypes.hpp"
+#include "MetaDebugging.hpp"
 
 namespace Concordia {
 
@@ -42,8 +43,12 @@ namespace Concordia {
 	template <typename T> 
 	class Pool : public IPool {
 	public:
-		Pool(int size = 100) { resize(size); }
-		virtual ~Pool() {}
+		Pool(int size = 100)
+		{
+			static_assert(std::is_default_constructible<T>::value, "Component of pool is not default constructable, more info: " FUNCTION_SIGNATURE);
+			resize(size);
+		}
+		virtual ~Pool() = default;
 
 		inline bool empty() const { return m_data.empty(); }
 
