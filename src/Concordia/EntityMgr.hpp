@@ -180,12 +180,12 @@ namespace Concordia{
 		template <typename C, typename... Args>
 		void addComponent(Entity e, Args... args) {
 			Pool<C>& poolHandle = getPool<C>();
-			poolHandle.addComponent(e.id(), C{std::forward<Args>(args)...} );
+			poolHandle.add(e.id(), C{std::forward<Args>(args)...} );
 		}
 
 		template <typename C> bool hasComponent(Entity e) {
 			Pool<C>& poolHandle = getPool<C>();
-			return poolHandle.hasComponent(e.id());
+			return poolHandle.containsId(e.id());
 		}
 
 		bool hasComponent(Entity e, size_t cmp_id) {
@@ -197,16 +197,7 @@ namespace Concordia{
 
 		template <typename C> C* getComponent(Entity e) {
 			Pool<C>& poolHandle = getPool<C>();
-			auto sz = poolHandle.size();
-			for (uint i = 0; i < poolHandle.size(); ++i)
-			{
-				if(poolHandle.entity_ids[i] == e.id()){
-					C* cmp = poolHandle.getComponentPtr(i);
-					return cmp;
-				}
-			}
-
-			return nullptr;
+			return poolHandle.getById(e.id());
 		}
 
 
@@ -217,16 +208,8 @@ namespace Concordia{
 		CBase* getAnyComponent(Entity e)
 		{
 			//MAYBE: Add a check to see if CBase is the base of all Cs...
-			using CmpGroup = ComponentGroup<Cs...>;
-			for (int i = 0; i < CmpGroup::size; ++i)
-			{
-				if(hasComponent(e, CmpGroup::ids[i]))
-				{
-					IPool* pool = getPool(CmpGroup::ids[i]);
-					return reinterpret_cast<CBase*>(pool->getRawComponent(e.id()));
-				}
-			}
-
+			
+			//TODO: Rewrite this method with typesafe recursion.
 			return nullptr;
 		}
 
