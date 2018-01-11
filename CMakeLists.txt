@@ -12,17 +12,13 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall")
 # find_package(SFML 2.3 REQUIRED graphics window system audio network)
 
 add_subdirectory(src)
-
-include_directories(src
-    #${SFML_INCLUDE_DIR}
-)
+include_directories(src)
 
 add_library(concordia ${CONCORDIA_SRCS} ${CONCORDIA_HDRS})
 set_target_properties(concordia PROPERTIES LINKER_LANGUAGE CXX)
 
-add_executable(${PROJECT_NAME} src/main.cpp)
+enable_testing()
 
-target_link_libraries(${PROJECT_NAME}
-  concordia
-  # ${SFML_LIBRARIES}
-)
+add_executable(ecs_test test/ecs_test.cpp)
+add_test(ECSTest ecs_test)
+target_link_libraries(ecs_test concordia)
