@@ -2,7 +2,7 @@
 
 namespace Concordia
 {
-	static size_t generate_id() {
+	inline size_t generate_id() {
 		static size_t s_cmpCounter = -1;
 		return ++s_cmpCounter;
 	}

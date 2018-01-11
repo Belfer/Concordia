@@ -30,10 +30,10 @@ namespace Concordia {
 
 	public:
 		template <typename C>
-		void addComponent(const C &cmp);
+		C& addComponent(const C &cmp);
 
 		template <typename C, typename... Args>
-		void addComponent(Args... args);
+		C& addComponent(Args... args);
 
 		template <typename C>
 		bool hasComponent() const;
@@ -178,9 +178,10 @@ namespace Concordia{
 		}*/
 
 		template <typename C, typename... Args>
-		void addComponent(Entity e, Args... args) {
+		C& addComponent(Entity e, Args... args) {
 			Pool<C>& poolHandle = getPool<C>();
 			poolHandle.add(e.id(), C{std::forward<Args>(args)...} );
+			return *poolHandle.getById(e.id());
 		}
 
 		template <typename C> bool hasComponent(Entity e) {
@@ -271,13 +272,13 @@ namespace Concordia{
 	};
 
 	template <typename C>
-	void Entity::addComponent(const C &cmp) {
-		m_entityMgr.addComponent(id(), cmp);
+	C& Entity::addComponent(const C &cmp) {
+		return m_entityMgr.addComponent(id(), cmp);
 	}
 
 	template <typename C, typename... Args>
-	void Entity::addComponent(Args... args) {
-		m_entityMgr.addComponent<C>(*this, args...);
+	C& Entity::addComponent(Args... args) {
+		return m_entityMgr.addComponent<C>(*this, args...);
 	}
 
 	template <typename C>

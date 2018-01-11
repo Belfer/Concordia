@@ -42,10 +42,14 @@ namespace Concordia {
 
 	template <typename T> 
 	class Pool : public IPool {
+#ifdef _DEBUG
+		const char* cmp_name_ = typeid(T).name();
+#endif
 	public:
 		Pool(int size = 100)
 		{
-			static_assert(std::is_default_constructible<T>::value, "Component of pool is not default constructable, more info: " FUNCTION_SIGNATURE);
+			static_assert(std::is_default_constructible<T>::value, 
+				"Component of pool is not default constructable, more info: " FUNCTION_SIGNATURE);
 			resize(size);
 		}
 		virtual ~Pool() = default;
