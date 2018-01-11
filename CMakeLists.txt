@@ -15,7 +15,6 @@ add_subdirectory(src)
 include_directories(src)
 
 add_library(concordia ${CONCORDIA_SRCS} ${CONCORDIA_HDRS})
-set_target_properties(concordia PROPERTIES LINKER_LANGUAGE CXX)
 
 enable_testing()
 
