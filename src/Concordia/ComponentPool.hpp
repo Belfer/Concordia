@@ -145,7 +145,7 @@ namespace Concordia
 //		const char* cmp_name = typeid(C).name();
 //#endif
 //	public:
-//		explicit CmpPool(unsigned int entity_amount = 100) : ICmpPool(get_id<C>(), sizeof(C), entity_amount)
+//		explicit CmpPool(unsigned int entity_amount = 100) : ICmpPool(get_cmp_id<C>(), sizeof(C), entity_amount)
 //		{
 //		}
 //
@@ -273,14 +273,14 @@ namespace Concordia
 //	template <typename C>
 //	CmpPool<C>& ICmpPool::as()
 //	{
-//		assert(get_id<C>() == this->component_id);
+//		assert(get_cmp_id<C>() == this->component_id);
 //		return reinterpret_cast<CmpPool<C>&>(*this);
 //	}
 //
 //	template <typename C>
 //	const CmpPool<C>& ICmpPool::as() const
 //	{
-//		assert(get_id<C>() == this->component_id);
+//		assert(get_cmp_id<C>() == this->component_id);
 //		return reinterpret_cast<const CmpPool<C>&>(*this);
 //	}
 }

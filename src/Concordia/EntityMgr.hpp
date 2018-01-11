@@ -124,11 +124,11 @@ namespace Concordia{
 #endif
 		template <typename C>
 		Pool<C> &getPool() {
-			auto it = m_cmpMap.find(get_id<C>());
+			auto it = m_cmpMap.find(get_cmp_id<C>());
 			if(it == m_cmpMap.end())
 			{
 				auto* pool = new Pool<C>{};
-				m_cmpMap.insert(it, { get_id<C>(), pool });
+				m_cmpMap.insert(it, { get_cmp_id<C>(), pool });
 				return *pool;
 			}
 
@@ -224,7 +224,7 @@ namespace Concordia{
 
 			explicit getAnyComponentImpl(Entity& e) {
 				//TODO: Remove after debugging
-				auto id = get_id<C>();
+				auto id = get_cmp_id<C>();
 				if (e.hasComponent<C>())
 					value = e.getComponent<C>();
 				else

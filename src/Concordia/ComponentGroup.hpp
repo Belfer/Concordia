@@ -13,7 +13,7 @@ namespace Concordia
 		constexpr size_t get_id_from()
 		{
 			using TClean = std::decay_t<T>;
-			return get_id<TClean>();
+			return get_cmp_id<TClean>();
 		}
 
 		template<typename T, typename = std::enable_if_t<!std::is_pointer_v<T>>>
