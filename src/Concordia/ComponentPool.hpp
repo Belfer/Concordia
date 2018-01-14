@@ -8,6 +8,12 @@
 
 namespace Concordia
 {
+	/*
+	 * A Component pool which has the characteristic that you can check and remove components
+	 * without the use of virtual functions. The downside is that you need to copy all the components in
+	 * so it does not fully work, that is why the ECS now uses the IPool and Pool classes. 
+	 */
+
 //	template<typename C>
 //	class CmpPool;
 //

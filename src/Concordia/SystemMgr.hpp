@@ -7,6 +7,7 @@
 #include <utility>
 #include <vector>
 #include "ISystem.hpp"
+#include "MetaDebugging.hpp"
 
 namespace Concordia {
 	/**

@@ -91,7 +91,7 @@ namespace Concordia
 
 		static const std::array<size_t, size> ids;
 
-		const std::array<void*, size> cmps;
+		std::array<void*, size> cmps;
 
 		constexpr ComponentGroup(Args&... args)
 			: cmps{ Impl::to_void_ptr(args)... }
@@ -131,11 +131,6 @@ namespace Concordia
 			using CmpType = Impl::nth_type_in_pack<I, Args...>;
 
 			return *static_cast<CmpType*>(cmps[I]);
-		}
-
-		void extractInto(Args&... Cs)
-		{
-			extract_impl(std::forward<Args*>(&Cs)...);
 		}
 
 		void extractInto(Args*... Cs)

@@ -19,5 +19,6 @@ set(CONCORDIA_SRCS
   "${CMAKE_CURRENT_SOURCE_DIR}/EntityMgr.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/SystemMgr.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/EventMgr.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/MetaDebugging.cpp"
   PARENT_SCOPE
 )

@@ -18,6 +18,4 @@ inline void EmptyFunction()
 {
 }
 
-inline volatile void ForceEmptyFunction()
-{
-}
+void ForceEmptyFunction(volatile char = 0);
