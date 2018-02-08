@@ -133,6 +133,16 @@ namespace Concordia
 			return *static_cast<CmpType*>(cmps[I]);
 		}
 
+		template<std::size_t I>
+		auto& get() const
+		{
+			static_assert(I < size, "I is bigger than the amount of components");
+
+			using CmpType = Impl::nth_type_in_pack<I, Args...>;
+
+			return *static_cast<CmpType*>(cmps[I]);
+		}
+
 		void extractInto(Args*... Cs)
 		{
 			extract_impl(std::forward<Args*>(Cs)...);
