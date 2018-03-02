@@ -269,6 +269,9 @@ namespace Concordia{
 
 		template<typename... Cmps>
 		std::vector<EntityWith<Cmps...>> getEntitiesWith();
+		
+		template<typename... Cmps>
+		std::unique_ptr<EntityWith<Cmps...>> getFirstEntityWith();
 
 	private:
 		std::unordered_map<size_t, IPool*> m_cmpMap;
@@ -364,6 +367,27 @@ namespace Concordia{
 		}
 
 		return available_entities;
+	}
+
+	template <typename ... Cmps>
+	std::unique_ptr<EntityWith<Cmps...>> EntityMgr::getFirstEntityWith()
+	{
+		static_assert(sizeof...(Cmps) > 0, "There needs to be at least one component, "
+			"if you want a list of all entities, call getEntities()");
+
+		using EntityComponents = EntityWith<Cmps...>;
+
+		//TODO: Rip cache coherency
+		for (Entity entity : m_entities)
+		{
+			if (HasAllCmps<Cmps...>(entity))
+			{
+				return std::make_unique<EntityWith<Cmps...>>(entity);
+			}
+		}
+
+		std::unique_ptr<EntityWith<Cmps...>> null_entity{nullptr};
+		return std::move(null_entity);
 	}
 
 	//TODO: Create an overload for removing a component by reference, for when a entity has multiple components of the same type
