@@ -74,7 +74,9 @@ namespace Concordia {
 		return { static_cast<void*>(entity.getComponent<Cmps>())... };
 	}
 
-	///A entity which is guaranteed to have these components, for easy use in functions
+	/// A struct which stores a group of components (Like ComponentGroup) but
+	/// also stores an Entity. Allowing for an entity with these components to be easily
+	/// passed around
 	template<typename... Cmps>
 	struct EntityWith : public ComponentGroup<Cmps...>
 	{
@@ -98,6 +100,8 @@ namespace Concordia {
 
 namespace std
 {
+	///Support for C++17's structured bindings for the EntityWith class
+
 	template<typename... Types>
 	struct tuple_size<Concordia::EntityWith<Types...>> : public integral_constant<size_t, sizeof...(Types)> {};
 

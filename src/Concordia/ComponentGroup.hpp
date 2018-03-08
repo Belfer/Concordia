@@ -84,7 +84,9 @@ namespace Concordia
 		using nth_type_in_pack = typename n_type_in_pack_impl<I, Pack...>::type;
 	}
 
-	/// Immutable group of components
+	/// 	Immutable group of components
+	/// This is used for when you want to have a bunch of components and want
+	/// it to only be 1 parameter
 	template<typename ...Args>
 	struct ComponentGroup
 	{
@@ -124,6 +126,8 @@ namespace Concordia
 			return *static_cast<T*>(cmp);
 		}
 
+		/// Gets the n-th component from this group.
+		/// Required for structured binding support in c++17
 		template<std::size_t I>
 		auto& get()
 		{
@@ -134,6 +138,8 @@ namespace Concordia
 			return *static_cast<CmpType*>(cmps[I]);
 		}
 
+		/// Gets the n-th const component from this group.
+		/// Required for structured binding support in c++17
 		template<std::size_t I>
 		auto& get() const
 		{
@@ -174,8 +180,11 @@ namespace Concordia
 	const std::array<size_t, ComponentGroup<Cmps...>::size> ComponentGroup<Cmps...>::ids = pack_get_ids<Cmps...>();
 }
 
+
 namespace std
 {
+	/// We specialize these functions so structured bindings work in c++17 for our ComponentGroup
+
 	template<typename... Types>
 	struct tuple_size<Concordia::ComponentGroup<Types...>> : public integral_constant<size_t, sizeof...(Types)> {};
 
