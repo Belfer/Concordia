@@ -21,6 +21,8 @@ constexpr void StaticAssertPrint()
 {
 	//Only in MSVC is the FUNCTION_SIGNATURE a macro that is expanded, in gcc it is a variable,
 	//Thus it can't be used to print a string literal like here
+
+	//Also MSVC doesn't parse template functions when they are not used, but GCC apparently does
 #ifdef _MSC_VER
 	static_assert(false, FUNCTION_SIGNATURE);
 #endif
