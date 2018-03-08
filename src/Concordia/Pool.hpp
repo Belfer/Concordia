@@ -7,6 +7,7 @@
 #include <vector>
 #include "CommonTypes.hpp"
 #include "MetaDebugging.hpp"
+#include <algorithm>
 
 namespace Concordia {
 
@@ -49,7 +50,7 @@ namespace Concordia {
 		Pool(int size = 100)
 		{
 			static_assert(std::is_default_constructible<T>::value, 
-				"Component of pool is not default constructable, more info: " FUNCTION_SIGNATURE);
+				"Component of pool is not default constructable, more info: " FUNCTION_STR);
 			resize(size);
 		}
 		virtual ~Pool() = default;

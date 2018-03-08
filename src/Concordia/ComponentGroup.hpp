@@ -4,6 +4,7 @@
 #include <iostream>
 #include <string>
 #include "MetaDebugging.hpp"
+#include <type_traits>
 
 namespace Concordia
 {
@@ -12,17 +13,17 @@ namespace Concordia
 		template<typename T>
 		constexpr size_t get_id_from()
 		{
-			using TClean = std::decay_t<T>;
+			using TClean = typename std::decay<T>::type;
 			return get_cmp_id<TClean>();
 		}
 
-		template<typename T, typename = std::enable_if_t<!std::is_pointer_v<T>>>
+		template<typename T, typename = typename std::enable_if<!std::is_pointer<T>::value>::type>
 		constexpr void* to_void_ptr(T& t)
 		{
 			return static_cast<void*>(&t);
 		}
 
-		template<typename T, typename = std::enable_if_t<std::is_pointer_v<T>>>
+		template<typename T, typename = std::enable_if_t<std::is_pointer<T>::value>>
 		constexpr void* to_void_ptr(T t)
 		{
 			return static_cast<void*>(t);
@@ -36,7 +37,7 @@ namespace Concordia
 		{
 			using TClean = std::decay_t<T>;
 			using T0Clean = std::decay_t<T0>;
-			static constexpr int value = std::is_same_v<TClean, T0Clean> ? N : get_index_in_pack_impl<T, (N + 1), Ts...>::value;
+			static constexpr int value = std::is_same<TClean, T0Clean>::value ? N : get_index_in_pack_impl<T, (N + 1), Ts...>::value;
 		};
 
 		template<typename T, int N, typename T0>
@@ -44,7 +45,7 @@ namespace Concordia
 		{
 			using TClean = std::decay_t<T>;
 			using T0Clean = std::decay_t<T0>;
-			static constexpr int value = std::is_same_v<TClean, T0Clean> ? N : -1;
+			static constexpr int value = std::is_same<TClean, T0Clean>::value ? N : -1;
 		};
 
 		template<typename T, int N>
@@ -103,7 +104,7 @@ namespace Concordia
 		{
 			constexpr int index = Impl::get_index_in_pack<T, Args...>;
 
-			static_assert(index != -1, "T was not found in GetNInList, function signature: " __FUNCSIG__);
+			static_assert(index != -1, "T was not found in GetNInList, function signature: " FUNCTION_STR);
 			if (index == -1)
 				assert(false && "This should never happen because of the static_assert");
 

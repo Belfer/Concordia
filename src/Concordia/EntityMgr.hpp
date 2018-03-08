@@ -69,7 +69,7 @@ namespace Concordia {
 	};
 
 	template<typename ... Cmps>
-	constexpr std::array<void*, sizeof...(Cmps)> GetAllCmps(Entity entity)
+	std::array<void*, sizeof...(Cmps)> GetAllCmps(Entity entity)
 	{
 		return { static_cast<void*>(entity.getComponent<Cmps>())... };
 	}
@@ -169,7 +169,7 @@ namespace Concordia{
 					return entity;
 			}
 
-			throw std::exception("Cannot find an entity with the id");
+			throw std::runtime_error("Cannot find an entity with the id");
 		}
 
 		/*template <typename C> void addComponent(Entity e, const C &cmp) {
@@ -273,7 +273,7 @@ namespace Concordia{
 
 	template <typename C>
 	C& Entity::addComponent(const C &cmp) {
-		return m_entityMgr.addComponent(id(), cmp);
+		return m_entityMgr.addComponent<C>(*this, cmp);
 	}
 
 	template <typename C, typename... Args>

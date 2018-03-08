@@ -17,7 +17,7 @@ namespace Concordia {
 	class EventMgr;
 
 	template <typename E> class System : public ISystem {
-
+		
 	};
 
 	class SystemMgr {
