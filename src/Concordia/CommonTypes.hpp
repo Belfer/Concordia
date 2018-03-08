@@ -2,6 +2,6 @@
 
 namespace Concordia
 {
-	using byte = char;
+	using byte = unsigned char;
 	using uint = unsigned int;
 }
