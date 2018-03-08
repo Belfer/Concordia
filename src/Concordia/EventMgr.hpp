@@ -8,6 +8,8 @@
 #include <utility>
 #include <vector>
 #include <functional>
+#include <queue>
+#include <mutex>
 
 namespace Concordia {
 	/**
@@ -53,7 +55,29 @@ namespace Concordia {
 		std::function<void(std::vector<SignalHandle> &)> m_clearSigFn;
 		std::vector<SignalHandle> m_sigHandles;
 	};
-
+	
+	class EventMgr;
+	
+	struct IEventData
+	{
+		virtual ~IEventData() = default;
+		
+		virtual void invoke(EventMgr&) = 0;
+	};
+	
+	template<typename T>
+	struct EventData : IEventData
+	{
+		T args;
+		
+		EventData(T args)
+			: args(args)
+		{
+		}
+		
+		void invoke(EventMgr& evt) override;
+	};
+	
 	class EventMgr : NonCopyable {
 	public:
 		using SignalPtr = std::shared_ptr<ISignal>;
@@ -70,7 +94,7 @@ namespace Concordia {
 			}
 
 			void (Receiver::*receive)(const E &) = &Receiver::receive;
-			auto signal =
+			auto* signal =
 				new Signal<E>(std::bind(receive, &receiver, std::placeholders::_1));
 
 			auto &sigSlots = slotsFor(Signal<E>::id());
@@ -92,19 +116,44 @@ namespace Concordia {
 		}
 
 		template <typename E, typename... Args> void broadcast(Args... args) {
-			broadcast(E(args...));
+            broadcast(E( args... ));
 		}
 
 		template <typename E> void broadcast(const E &event) {
+//			auto &sigSlots = slotsFor(Signal<E>::id());
+//			for (auto sig : sigSlots.second) {
+//				(*sig.second)(static_cast<const void *>(&event));
+//			}
+			event_queue_mutex.lock();
+			auto* eventData = new EventData<E>(event);
+			event_queue.push(eventData);
+			event_queue_mutex.unlock();
+		}
+		
+		template<typename E> void broadcast_now(const E& event) {
 			auto &sigSlots = slotsFor(Signal<E>::id());
 			for (auto sig : sigSlots.second) {
 				(*sig.second)(static_cast<const void *>(&event));
 			}
 		}
+		
+		inline void dispatch_event_queue()
+		{
+			event_queue_mutex.lock();
+			while (!event_queue.empty())
+			{
+				auto* event = event_queue.front();
+				event->invoke(*this);
+				delete event;
+				event_queue.pop();
+			}
+			event_queue_mutex.unlock();
+		}
 
 	private:
 		using SigSlots = std::unordered_map<size_t, SignalPtr>;
 
+		/// Gets you the list of slots for the index eId
 		std::pair<size_t, SigSlots> &slotsFor(size_t eId) {
 			if (eId >= m_bus.size())
 				m_bus.resize(eId + 1);
@@ -119,5 +168,15 @@ namespace Concordia {
 		}
 
 		std::vector<std::pair<size_t, SigSlots>> m_bus;
+		//TODO: Can this be faster with a custom allocator?
+		std::queue<IEventData*> event_queue;
+		std::mutex event_queue_mutex;
 	};
+	
+	template<typename T>
+	void EventData<T>::invoke(EventMgr& evt)
+	{
+		evt.broadcast_now<T>(args);
+	}
 }
+
