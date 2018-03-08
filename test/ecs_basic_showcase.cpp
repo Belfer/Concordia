@@ -31,7 +31,7 @@ struct Camera
 
 
 EventMgr eventMgr;
-EntityMgr entityMgr;
+EntityMgr entityMgr(eventMgr);
 SystemMgr systemMgr(entityMgr, eventMgr);
 
 class PlayerController : public ISystem

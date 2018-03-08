@@ -11,6 +11,8 @@
 #include "Identification.hpp"
 #include "MetaUtils.hpp"
 #include "Pool.hpp"
+#include "EventMgr.hpp"
+#include "EntityEvents.hpp"
 
 namespace Concordia {
 	template <typename E> struct ICmp {
@@ -115,6 +117,12 @@ namespace std
 namespace Concordia{
 
 	class EntityMgr {
+private:
+	EventMgr& eventMgr;
+
+public:
+	EntityMgr(EventMgr& eventMgr) : eventMgr(eventMgr){}
+
 	private:
 		template<typename C>
 		struct ComponentElement
@@ -123,9 +131,6 @@ namespace Concordia{
 			C component;
 		};
 
-#ifdef _DEBUG
-	public:
-#endif
 		template <typename C>
 		Pool<C> &getPool() {
 			auto it = m_cmpMap.find(get_cmp_id<C>());
@@ -157,7 +162,12 @@ namespace Concordia{
 			return Entity(++s_entityCounter, *this);
 		}
 
-		void addEntity(Entity e) { m_entities.emplace_back(e); }
+		void addEntity(Entity e) { 
+			m_entities.push_back(e);
+			EntityAddedEvent arg;
+			arg.entityID = e.id();
+			eventMgr.broadcast<EntityAddedEvent>(arg);
+		}
 
 		void removeEntity(Entity e)
 		{
@@ -184,7 +194,8 @@ namespace Concordia{
 		template <typename C, typename... Args>
 		C& addComponent(Entity e, Args... args) {
 			Pool<C>& poolHandle = getPool<C>();
-			poolHandle.add(e.id(), C{std::forward<Args>(args)...} );
+			//I removed the std::forward here: because doubles were not being converted to floats:
+			poolHandle.add(e.id(), C{/*std::forward<Args>(args)...*/ args...} );
 			return *poolHandle.getById(e.id());
 		}
 

@@ -12,6 +12,7 @@ set(CONCORDIA_HDRS
   "${CMAKE_CURRENT_SOURCE_DIR}/MetaDebugging.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ComponentPool.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/CommonTypes.hpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/EntityEvents.hpp"
   PARENT_SCOPE
 )
 

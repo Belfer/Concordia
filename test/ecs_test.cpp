@@ -2,6 +2,7 @@
 #include "Concordia/SystemMgr.hpp"
 #include "Concordia/EventMgr.hpp"
 #include "Concordia/CommonTypes.hpp"
+#include "Concordia/EntityEvents.hpp"
 #include <iostream>
 #include <string>
 
@@ -15,6 +16,15 @@ struct SystemEventsReceiver : Receiver {
   void receive(const SystemEvent &e) {
     std::cout << "SystemEventsReceiver - Received event from systems!\n";
   }
+};
+
+class EntityAddedReceiver : public Receiver {
+public:
+	EntityAddedReceiver(EventMgr& ev) { ev.subscribe<EntityAddedEvent>(*this); }
+
+	void receive(const EntityAddedEvent& e) {
+		std::cout << "Entity: " << e.entityID << " added!\n";
+	}
 };
 
 struct GameObjectCmp : ICmp<GameObjectCmp> {
@@ -141,10 +151,11 @@ struct PhysicsSystem : System<PhysicsSystem>
 };
 
 EventMgr eventMgr;
-EntityMgr entityMgr;
+EntityMgr entityMgr(eventMgr);
 SystemMgr systemMgr(entityMgr, eventMgr);
 
 SystemEventsReceiver receiver(eventMgr);
+EntityAddedReceiver entityAddedReceiver(eventMgr);
 
 bool running = true;
 
@@ -155,6 +166,7 @@ void run() {
 
   systemMgr.init();
   while (running) {
+	eventMgr.dispatch_event_queue();
     systemMgr.update(dt);
     systemMgr.render();
 
