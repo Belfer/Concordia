@@ -25,7 +25,6 @@ namespace Concordia {
 		}
 	};
 
-	//IDID: renaming sig to 'Signal' or 'signal' for clarity
 	template <typename E> struct Signal : public ISignal {
 		explicit Signal(std::function<void(const E &)> sigFn) : m_sigFn(sigFn) {}
 		virtual void operator()(const void *p) {
