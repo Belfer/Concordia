@@ -193,6 +193,9 @@ public:
 
 		template <typename C, typename... Args>
 		C& addComponent(Entity e, Args... args) {
+			//TODO: Does this check have to be in the Pool class itself?
+			static_assert(is_complete<C>::value, "The Component is an incomplete type! Check if it is not a forward declaration.");
+
 			Pool<C>& poolHandle = getPool<C>();
 			//I removed the std::forward here: because doubles were not being converted to floats:
 			poolHandle.add(e.id(), C{/*std::forward<Args>(args)...*/ args...} );

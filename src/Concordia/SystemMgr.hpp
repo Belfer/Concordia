@@ -26,6 +26,7 @@ namespace Concordia {
 			: m_entityMgr(entityMgr), m_eventMgr(eventMgr) {}
 
 		template <typename S, typename... Args> void addSys(Args... args) {
+			static_assert(is_complete<S>::value, "The System is an incomplete type! Check if it is not a forward declaration.");
 			static_assert(std::is_base_of<ISystem, S>::value, "The system class needs to inherit from ISystem!");
 
 			S* sys = new S{ std::forward<Args>(args)... };
