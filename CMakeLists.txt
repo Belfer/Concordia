@@ -19,5 +19,8 @@ add_library(concordia ${CONCORDIA_SRCS} ${CONCORDIA_HDRS})
 enable_testing()
 
 add_executable(ecs_test test/ecs_test.cpp)
+add_executable(ecs_showcase test/ecs_basic_showcase)
 add_test(ECSTest ecs_test)
+add_test(ECSExample ecs_showcase)
 target_link_libraries(ecs_test concordia)
+target_link_libraries(ecs_showcase concordia)
